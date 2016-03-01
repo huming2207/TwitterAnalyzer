@@ -38,6 +38,7 @@ namespace TwitterAnalyzer
                     Console.WriteLine();
                     Console.WriteLine("Usage:");
                     Console.WriteLine("ta.exe  --settings PATH_TO_CONFIG --termfreq PATH_TO_TERMFREQ_CONFIG --result PATH_TO_RESULT_CSV");
+                    Console.ReadLine();
                 }
             }
 
@@ -77,7 +78,6 @@ namespace TwitterAnalyzer
                 Console.WriteLine("Terminated by user. Thanks for using TwitterAnalyzer!");
             };
 
-            Console.ReadKey();
 
         }
     }
