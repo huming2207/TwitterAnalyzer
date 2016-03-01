@@ -80,21 +80,20 @@ namespace TwitterAnalyzer
                 */
 
                 string resultTweet = string.Empty;
+               
                 if (args.Tweet.Place != null) // Try recording all location info.
                 {
                     resultTweet = @""""+ DateTime.Now.ToShortDateString() + "  " + DateTime.Now.ToLongTimeString()+ 
-                    @""",""" + args.Tweet.Text.ToString().Replace("\r", " ").Replace("\n", " ") + @"""," +
+                    @"""," + 
                     args.Tweet.IsRetweet.ToString() + "," + args.Tweet.RetweetCount.ToString() + "," +
-                    args.Tweet.PublishedTweetLength.ToString() + "," + args.Tweet.CreatedBy.Name.ToString() + ",,," +
+                    args.Tweet.PublishedTweetLength.ToString() + "," + args.Tweet.FavouriteCount.ToString()+ ",,," +
                     args.Tweet.Place.Country.ToString() + "," +args.Tweet.Place.FullName.ToString().Replace(","," ");
                 }
-                
-                else //...what a pity, no location information! So, just record something else available only!
+                else // ...what a pity, no location information! So, just record something else available only!
                 {
                     resultTweet = @"""" + DateTime.Now.ToShortDateString() + "  " + DateTime.Now.ToLongTimeString() +
-                    @""",""" + args.Tweet.Text.ToString().Replace("\r", " ").Replace("\n"," ") + @"""," +
-                    args.Tweet.IsRetweet.ToString() + "," + args.Tweet.RetweetCount.ToString() + "," +
-                    args.Tweet.PublishedTweetLength.ToString() + "," + args.Tweet.CreatedBy.Name.ToString();
+                    @"""," + args.Tweet.IsRetweet.ToString() + "," + args.Tweet.RetweetCount.ToString() + "," +
+                    args.Tweet.PublishedTweetLength.ToString() + "," + args.Tweet.FavouriteCount.ToString();
                 }
                 
                     
@@ -107,7 +106,7 @@ namespace TwitterAnalyzer
                 writer.Dispose();
                 Console.WriteLine();
                 Console.WriteLine();
-                Console.WriteLine("==========STOPPED==========");
+                Console.WriteLine("====================STOPPED====================");
                 Console.WriteLine("TwitterAnalyzer stopped.");
 
                 if(args.Exception != null)
@@ -129,7 +128,7 @@ namespace TwitterAnalyzer
                     Console.WriteLine(args.DisconnectMessage.Reason);
                 }
 
-                Console.WriteLine("==========STOPPED==========");
+                Console.WriteLine("====================STOPPED====================");
 
             };
 
@@ -137,9 +136,9 @@ namespace TwitterAnalyzer
             {
                 Console.WriteLine();
                 Console.WriteLine();
-                Console.WriteLine("==========PAUSED==========");
+                Console.WriteLine("====================PAUSED====================");
                 Console.WriteLine("TwitterAnalyzer paused.");
-                Console.WriteLine("==========PAUSED==========");
+                Console.WriteLine("====================PAUSED====================");
             };
 
             stream.StartStreamMatchingAllConditions();
