@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Ini.Net;
 using System.IO;
+using Nito.AsyncEx;
 
 
 namespace TwitterAnalyzer
@@ -13,11 +14,18 @@ namespace TwitterAnalyzer
     class Program
     {
         private static string termFreq = string.Empty;
-        private static string resultCsv = string.Empty;
+        private static string resultFilteredCsv, resultSampleCsv = string.Empty;
         private static string confData = string.Empty;
         static void Main(string[] args)
         {
-            for(int i =0;i < args.Length;i++)
+            Console.CancelKeyPress += ((sender, e) =>
+            {
+                TwitterStreamControl.StopAllStreams();
+                Console.WriteLine("Stopped by user.");
+
+            });
+
+            for (int i = 0;i < args.Length;i++)
             {
                 if(args[i].Contains("--settings"))
                 {
@@ -27,17 +35,22 @@ namespace TwitterAnalyzer
                 {
                     termFreq = args[i + 1];
                 }
-                else if(args[i].Contains("--result"))
+                else if(args[i].Contains("--resultfiltered") || args.Contains("-rf"))
                 {
-                    resultCsv = args[i + 1];
+                    resultFilteredCsv = args[i + 1];
                 }
+                else if (args[i].Contains("--resultsample") || args.Contains("-rs"))
+                {
+                    resultSampleCsv = args[i + 1];
+                }
+
                 else if(args[i].Contains("--help") || args.Contains("-?") || args.Contains("-h"))
                 {
                     Console.WriteLine("Twitter Analyzer");
                     Console.WriteLine("By Jackson Ming Hu @ RMIT University, Australia");
                     Console.WriteLine();
                     Console.WriteLine("Usage:");
-                    Console.WriteLine("ta.exe  --settings PATH_TO_CONFIG --termfreq PATH_TO_TERMFREQ_CONFIG --result PATH_TO_RESULT_CSV");
+                    Console.WriteLine("ta.exe  --settings PATH_TO_CONFIG --termfreq PATH_TO_TERMFREQ_CONFIG --resultfiltered PATH_TO_FILTERED_CSV --resultsample PATH_TO_SAMPLED_RESULT_CSV");
                     Console.ReadLine();
                 }
             }
@@ -56,7 +69,20 @@ namespace TwitterAnalyzer
                     iniFile.ReadString("UserInfo", "AccessToken"),
                     iniFile.ReadString("UserInfo", "TokenKey"));
 
-                TwitterStreamControl.StartStream(termFreq, resultCsv);
+                Task.Run(async () =>
+                {
+                    await TwitterStreamControl.StartSampleStream(termFreq, resultSampleCsv);
+                }
+                );
+
+                Task.Run(async () =>
+                {
+                    await TwitterStreamControl.StartFilteredStream(termFreq, resultFilteredCsv);
+                }
+                );
+
+                Console.ReadLine();
+
             }
             else
             {
@@ -71,14 +97,10 @@ namespace TwitterAnalyzer
 
 
 
-            Console.CancelKeyPress += delegate(object sender, ConsoleCancelEventArgs e)
-            {
-                e.Cancel = true;
-                Console.WriteLine();
-                Console.WriteLine("Terminated by user. Thanks for using TwitterAnalyzer!");
-            };
+
 
 
         }
+
     }
 }
